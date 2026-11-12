@@ -1,0 +1,408 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Attendance System</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="app">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <i class="bi bi-qr-code-scan"></i>
+            <span>SmartAttend</span>
+        </div>
+
+        <nav>
+            <button class="nav-link active" data-page="dashboard">
+                <i class="bi bi-grid"></i> Dashboard
+            </button>
+
+            <button class="nav-link" data-page="students">
+                <i class="bi bi-people"></i> Students
+            </button>
+
+            <button class="nav-link" data-page="attendance">
+                <i class="bi bi-calendar-check"></i> Attendance
+            </button>
+
+            <button class="nav-link" data-page="qr">
+                <i class="bi bi-qr-code"></i> QR Generator
+            </button>
+
+            <button class="nav-link" data-page="reports">
+                <i class="bi bi-file-earmark-bar-graph"></i> Reports
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <i class="bi bi-shield-check"></i>
+            Smart Attendance
+        </div>
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+            <button class="menu-btn" id="menuBtn" aria-label="Toggle menu">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <div>
+                <h2 id="pageTitle">Dashboard</h2>
+                <p>QR-Based Smart Attendance Management</p>
+            </div>
+
+            <div class="top-date" id="todayDate"></div>
+        </header>
+
+        <div class="content">
+
+            <!-- DASHBOARD -->
+            <section class="page active" id="dashboard">
+
+                <div class="welcome">
+                    <div>
+                        <h1>Welcome Back!</h1>
+                        <p>Here is your attendance overview for today.</p>
+                    </div>
+
+                    <button class="primary-btn" id="quickQR">
+                        <i class="bi bi-qr-code"></i> Generate QR
+                    </button>
+                </div>
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <p>Total Students</p>
+                        <h2 id="totalStudents">0</h2>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="bi bi-person-check"></i>
+                        </div>
+                        <p>Present Today</p>
+                        <h2 id="presentStudents">0</h2>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon coral">
+                            <i class="bi bi-person-x"></i>
+                        </div>
+                        <p>Absent Today</p>
+                        <h2 id="absentStudents">0</h2>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon apricot">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <p>Attendance Rate</p>
+                        <h2 id="attendanceRate">0%</h2>
+                    </div>
+
+                </div>
+
+                <div class="charts-grid">
+
+                    <div class="panel">
+                        <h3>Weekly Attendance Analysis</h3>
+                        <p>Attendance percentage over the last seven days</p>
+                        <div class="chart-container">
+                            <canvas id="weeklyChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <h3>Today's Attendance</h3>
+                        <p>Present, absent and unmarked students</p>
+                        <div class="chart-container doughnut-container">
+                            <canvas id="attendanceChart"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="panel">
+                    <h3>Quick Actions</h3>
+
+                    <div class="quick-actions">
+                        <button class="action-btn" data-go="students">
+                            <i class="bi bi-person-plus"></i>
+                            Add Student
+                        </button>
+
+                        <button class="action-btn" data-go="attendance">
+                            <i class="bi bi-calendar-check"></i>
+                            Mark Attendance
+                        </button>
+
+                        <button class="action-btn" data-go="qr">
+                            <i class="bi bi-qr-code"></i>
+                            Generate QR
+                        </button>
+
+                        <button class="action-btn" data-go="reports">
+                            <i class="bi bi-download"></i>
+                            Download Report
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- STUDENTS -->
+            <section class="page" id="students">
+
+                <div class="section-heading">
+                    <h1>Student Management</h1>
+                    <p>Register and manage student information.</p>
+                </div>
+
+                <div class="panel">
+                    <h3>Add New Student</h3>
+
+                    <form id="studentForm">
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+                                <label for="rollNo">Roll Number</label>
+                                <input id="rollNo" type="text" placeholder="Enter roll number" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="studentName">Student Name</label>
+                                <input id="studentName" type="text" placeholder="Enter student name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="className">Class</label>
+                                <input id="className" type="text" placeholder="Enter class" required>
+                            </div>
+
+                        </div>
+
+                        <button class="primary-btn" type="submit">
+                            <i class="bi bi-plus-circle"></i> Add Student
+                        </button>
+
+                        <p id="studentMessage" class="message" role="status"></p>
+
+                    </form>
+                </div>
+
+                <div class="panel">
+                    <div class="table-heading">
+                        <h3>Registered Students</h3>
+                        <input type="search" id="studentSearch" placeholder="Search students...">
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Roll Number</th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="studentTable">
+                                <tr>
+                                    <td colspan="4">Loading students...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- ATTENDANCE -->
+            <section class="page" id="attendance">
+
+                <div class="section-heading">
+                    <h1>Attendance Management</h1>
+                    <p>View and update today's student attendance.</p>
+                </div>
+
+                <div class="panel">
+                    <div class="table-heading">
+                        <h3>Today's Attendance</h3>
+
+                        <button class="secondary-btn" id="refreshAttendance">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Roll Number</th>
+                                    <th>Student Name</th>
+                                    <th>Class</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="attendanceTable">
+                                <tr>
+                                    <td colspan="5">Loading attendance...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- QR GENERATOR -->
+            <section class="page" id="qr">
+
+                <div class="section-heading">
+                    <h1>QR Code Generator</h1>
+                    <p>Generate a QR code for student attendance.</p>
+                </div>
+
+                <div class="qr-panel panel">
+
+                    <div class="qr-information">
+                        <div class="qr-icon">
+                            <i class="bi bi-qr-code-scan"></i>
+                        </div>
+
+                        <h2>Generate Attendance QR</h2>
+
+                        <p>
+                            Generate a unique QR code. Students can scan
+                            it using their phone camera and enter their
+                            registered roll number.
+                        </p>
+
+                        <button class="primary-btn" id="generateQR">
+                            <i class="bi bi-magic"></i>
+                            Generate QR Code
+                        </button>
+
+                        <p id="qrMessage" class="message" role="status"></p>
+                    </div>
+
+                    <div class="qr-result" id="qrResult">
+
+                        <div class="qr-placeholder" id="qrPlaceholder">
+                            <i class="bi bi-qr-code"></i>
+                            <p>Your QR code will appear here.</p>
+                        </div>
+
+                        <img id="qrImage" alt="Generated attendance QR code" hidden>
+
+                        <p id="qrLink"></p>
+
+                        <div class="qr-buttons">
+                            <button class="secondary-btn" id="downloadQR" disabled>
+                                <i class="bi bi-download"></i> Download QR
+                            </button>
+
+                            <button class="secondary-btn" id="copyQRLink" disabled>
+                                <i class="bi bi-copy"></i> Copy Link
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- REPORTS -->
+            <section class="page" id="reports">
+
+                <div class="section-heading">
+                    <h1>Attendance Reports</h1>
+                    <p>Download attendance records for analysis.</p>
+                </div>
+
+                <div class="panel report-panel">
+                    <div class="report-icon">
+                        <i class="bi bi-file-earmark-spreadsheet"></i>
+                    </div>
+
+                    <h2>Attendance CSV Report</h2>
+
+                    <p>
+                        Download the attendance records in CSV format.
+                        You can open this file using spreadsheet software.
+                    </p>
+
+                    <a href="/api/report" class="primary-btn" id="downloadReport">
+                        <i class="bi bi-download"></i>
+                        Download Attendance Report
+                    </a>
+                </div>
+
+                <div class="panel">
+                    <h3>Attendance Summary</h3>
+
+                    <div class="report-summary">
+                        <div>
+                            <span>Total Students</span>
+                            <strong id="reportTotal">0</strong>
+                        </div>
+
+                        <div>
+                            <span>Present</span>
+                            <strong id="reportPresent">0</strong>
+                        </div>
+
+                        <div>
+                            <span>Absent</span>
+                            <strong id="reportAbsent">0</strong>
+                        </div>
+
+                        <div>
+                            <span>Unmarked</span>
+                            <strong id="reportUnmarked">0</strong>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+
+        <footer>
+            <p>QR-Based Smart Attendance Management System</p>
+            <span>Designed for smarter attendance management.</span>
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
